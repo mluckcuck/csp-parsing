@@ -1,4 +1,10 @@
 channel a
 channel b, c
+channel d : Bool
+channel e, f : Bool
 
 p = a -> b -> c -> SKIP
+
+q(x) = a -> b -> STOP
+
+r = p ||| q

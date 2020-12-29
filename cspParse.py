@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
+from walkers.cspm_walker import CSP_Walker # but this only works in Python3
 
 try:
     input = raw_input   # For Python2 compatibility
@@ -10,6 +10,7 @@ except NameError:
 from lark import Lark
 import argparse
 import os
+
 
 VERSION_NUM = 0.1
 
@@ -49,27 +50,31 @@ print(SOURCE)
 print("")
 
 #Parse the contract
-parseTree = parser.parse(SOURCE)
+parse_tree = parser.parse(SOURCE)
 
 if PRINT:
     print("+++ Pretty Parse Tree +++")
     print("")
 
-    print(parseTree.pretty())
+    print(parse_tree.pretty())
     print("")
 
 print("+++ Translator Output +++")
 print("")
 
+if args.grammar == "csp":
+    walker = CSP_Walker(None)
+    walker.walk(parse_tree)
+
 if TRANSLATOR == "test":
     # Just Prints the Output, which should be the same (apart from whitespace)
     # as the input
     test_trans = Test_Translator()
-    print(test_trans.translate(parseTree))
+    print(test_trans.translate(parse_tree))
 
 elif TRANSLATOR == "rosmon_rml":
     romMon_trans = ROSMon_Translator()
-    rosmon_config = romMon_trans.translate(parseTree)
+    rosmon_config = romMon_trans.translate(parse_tree)
 
     print(rosmon_config)
 

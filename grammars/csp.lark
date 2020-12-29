@@ -1,17 +1,23 @@
 start: (chan_decl | proc_decl )+
 
-chan_decl : "channel" WORD ("," WORD)* (":" WORD ("." WORD)* )?
+chan_decl : "channel" chan_name ("," chan_name)* (chan_type)?
 
-proc_decl : WORD("(" arguments ")")? "=" proc
+chan_name : WORD
+chan_type : ":" WORD ("." WORD)*
 
-arguments: WORD ("," WORD)
+proc_decl : proc_name("(" arguments ")")? "=" proc_body
+
+proc_name : WORD
+arguments: WORD ("," WORD)*
+proc_body : proc
 
 proc : "STOP" -> stop
      | "SKIP" -> skip
+     | proc_name -> proc_ref
      | event "->" proc -> prefix
      | proc "[]" proc -> external_choice
      | proc "|~|" proc -> internal_choice
-     | proc "|||" proc -> inteerleave
+     | proc "|||" proc -> interleave
      | proc "[|" event_set "|]" proc -> interface_parallel
      | proc "[" event_set "||" event_set "]" proc -> alphabet_parallel
      | proc "\\" event_set -> hiding

@@ -1,0 +1,44 @@
+start: (chan_decl | proc_decl )+
+
+chan_decl : "channel" WORD ("," WORD)* (":" WORD ("." WORD)* )?
+
+proc_decl : WORD("(" arguments ")")? "=" proc
+
+arguments: WORD ("," WORD)
+
+proc : "STOP" -> stop
+     | "SKIP" -> skip
+     | event "->" proc -> prefix
+     | proc "[]" proc -> external_choice
+     | proc "|~|" proc -> internal_choice
+     | proc "|||" proc -> inteerleave
+     | proc "[|" event_set "|]" proc -> interface_parallel
+     | proc "[" event_set "||" event_set "]" proc -> alphabet_parallel
+     | proc "\\" event_set -> hiding
+     | proc ";" proc -> sequential_composition
+     | "if" boolean_expression "then" proc "else" proc -> conditional
+     | proc "/\\" proc -> interrupt
+     | proc "[>" proc -> timout
+
+event_set : "{|" WORD+ "|}"
+
+event : WORD
+
+boolean_expression : BOOLEAN
+                  | WORD "==" WORD
+
+BOOLEAN : "TRUE" | "FALSE"
+
+
+
+%import common.DIGIT
+%import common.LETTER
+%import common.UCASE_LETTER
+%import common.LCASE_LETTER
+%import common.NEWLINE
+
+%import common.WORD
+%import common.LETTER
+%import common.INT -> NUMBER
+%import common.WS
+%ignore WS

@@ -1,0 +1,4 @@
+channel a
+channel b, c
+
+p = a -> b -> c -> SKIP

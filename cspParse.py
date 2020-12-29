@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from translators.translator_test import Test_Translator
-from translators.translator_rosmon import ROSMon_Translator
+
 
 try:
     input = raw_input   # For Python2 compatibility
@@ -16,11 +15,8 @@ VERSION_NUM = 0.1
 
 ## Arguments
 argParser = argparse.ArgumentParser()
-argParser.add_argument("grammar", help="The grammar to parse with.", default = "rcl")
-argParser.add_argument("contract", help="The contract file to be parsed.")
-argParser.add_argument("-t", help="The translator to use",choices=['test', 'rosmon_rml'], default = 'test' )
-argParser.add_argument("-o", help="The path to the output file for the translation")
-argParser.add_argument("-p", help="Print the parse tree", type=bool, default = False)
+argParser.add_argument("grammar", help="The grammar to parse with.", default = "csp")
+argParser.add_argument("source", help="The contract file to be parsed.")
 
 
 ## Parse the Args
@@ -29,27 +25,14 @@ args = argParser.parse_args()
 grammar_loc = "grammars/" + args.grammar +".lark"
 
 GRAMMAR = open(grammar_loc).read()
-CONTRACT = open(args.contract).read()
+SOURCE = open(args.source).read()
+PRINT = True
+TRANSLATOR = None
 
-if args.o:
-    OUTPUT_PATH = args.o
-else:
-    # the weird rsplit gets the string to the right of the last "/" in the contract path
-    contract_name = args.contract.rsplit("/",1)[1]
-    # then remove and then replace the file extension
-    contract_name = contract_name.rsplit(".",1)[0]
-    contract_name += (".yaml")
 
-    OUTPUT_PATH = "output/" + contract_name
-
-    if not os.path.exists("output"):
-        os.mkdir("output")
-
-TRANSLATOR = args.t
-PRINT = args.p
 
 print("++++++++++++++++++++++++++++++++++++++++++++++")
-print("++++++ ROS Contract Language Translator ++++++")
+print("+++++++++++++++++ CSP Parser +++++++++++++++++")
 print("++++++++++++++++ version " + str(VERSION_NUM) + " +++++++++++++++++")
 print("+++++++++++++++ Matt Luckcuck ++++++++++++++++")
 print("++++++++++++++++++++++++++++++++++++++++++++++")
@@ -62,11 +45,11 @@ print("")
 parser = Lark(GRAMMAR)
 
 print("+++ Input File = +++")
-print(CONTRACT)
+print(SOURCE)
 print("")
 
 #Parse the contract
-parseTree = parser.parse(CONTRACT)
+parseTree = parser.parse(SOURCE)
 
 if PRINT:
     print("+++ Pretty Parse Tree +++")

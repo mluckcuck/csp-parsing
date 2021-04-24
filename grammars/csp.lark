@@ -7,13 +7,13 @@ chan_type : ":" WORD ("." WORD)*
 
 proc_decl : proc_name("(" arguments ")")? "=" proc_body
 
-proc_name : WORD
+proc_name : UPPER_CASE_WORD
 arguments: WORD ("," WORD)*
 proc_body : proc
 
 proc : "STOP" -> stop
      | "SKIP" -> skip
-     | proc_name -> proc_ref
+     | proc_name ("(" arguments ")")? -> proc_ref
      | event "->" proc -> prefix
      | proc "[]" proc -> external_choice
      | proc "|~|" proc -> internal_choice
@@ -28,14 +28,15 @@ proc : "STOP" -> stop
 
 event_set : "{|" WORD+ "|}"
 
-event : WORD
+event : LOWER_CASE_WORD
 
 boolean_expression : BOOLEAN
                   | WORD "==" WORD
 
 BOOLEAN : "TRUE" | "FALSE"
 
-
+LOWER_CASE_WORD: (LCASE_LETTER|DIGIT) ("'"|"_"|LCASE_LETTER|DIGIT)*
+UPPER_CASE_WORD: (UCASE_LETTER|DIGIT) ("'"|"_"|UCASE_LETTER|DIGIT)*
 
 %import common.DIGIT
 %import common.LETTER
